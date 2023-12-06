@@ -1,4 +1,7 @@
-package backend;
+// LoginFrame.java
+package frontend;
+
+import backend.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -65,7 +68,34 @@ public class LoginFrame extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if(e.getSource()==blogin) {
             // authentication logic here
+            Database db = new Database();
+            db.createTable();
+            String username = txuser.getText();
+            String password = new String(pass.getPassword());
+            if (db.authenticateUser(username, password)) {
+                JOptionPane.showMessageDialog(this, "Login successful!");
+                // proceed to the next frame
+                this.dispose();
+                new MainMenu();
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid username or password!");
+            }
+        } else if (e.getSource() == bregister) {
+            // registration logic here
+            String username = txuser.getText();
+            String password = new String(pass.getPassword());
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a username and a password!");
+                return;
+            }
+            Database db = new Database();
+            db.createTable();
+            if (db.authenticateUser(username, password)) {
+                JOptionPane.showMessageDialog(this, "This username is already taken!");
+                return;
+            }
+            db.insertUser(username, password);
+            JOptionPane.showMessageDialog(this, "Registration successful!");
         }
     }
-
 }
