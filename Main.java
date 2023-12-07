@@ -17,14 +17,14 @@ public class Main {
              Statement stmt = conn.createStatement();) {
 
             // Check if the database exists
-            ResultSet rs = stmt.executeQuery("SHOW DATABASES LIKE 'UserAccounts'");
+            ResultSet rs = stmt.executeQuery("SHOW DATABASES LIKE 'SIS'");
 
             // If the database does not exist, create it
             if (!rs.next()) {
-                stmt.executeUpdate("CREATE DATABASE UserAccounts");
+                stmt.executeUpdate("CREATE DATABASE SIS");
                 System.out.println("Database created successfully...");
             } else {
-                System.out.println("Database already exists.");
+                
             }
         } catch (SQLException e) {
             e.printStackTrace();

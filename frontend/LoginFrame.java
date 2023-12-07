@@ -15,7 +15,7 @@ public class LoginFrame extends JFrame implements ActionListener {
     JButton bregister;
 
     public LoginFrame() {
-        super("Login Authentication");
+        super("Sunshine Inventory System");
 
         txuser = new JTextField(10);
         pass = new JPasswordField(10);
