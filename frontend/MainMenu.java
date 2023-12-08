@@ -78,7 +78,8 @@ public class MainMenu extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(null, "Report generated successfully!");
             }
         } else if (e.getSource() == orderSuppliesButton) {
-            // Add your action for the "Order Supplies" button here
+            this.dispose();
+            new OrderSuppliesFrame(this);
         }
     }
 }

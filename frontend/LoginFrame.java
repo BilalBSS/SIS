@@ -16,53 +16,64 @@ public class LoginFrame extends JFrame implements ActionListener {
 
     public LoginFrame() {
         super("Sunshine Inventory System");
-
-        txuser = new JTextField(10);
-        pass = new JPasswordField(10);
+    
+        JLabel messageLabel = new JLabel("SIS Login Page");
+        messageLabel.setFont(new Font("Arial", Font.BOLD, 16));  // Set the font size and style
+        messageLabel.setForeground(Color.BLACK);
+        messageLabel.setHorizontalAlignment(JLabel.CENTER);  // Center the text horizontally
+    
+        txuser = new JTextField(15);  // Increase the width of the username field
+        pass = new JPasswordField(15);  // Increase the width of the password field
         bregister = new JButton("Register");
         blogin = new JButton("Login");
-
+    
         setLayout(new GridBagLayout());
         setSize(500,300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+    
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.anchor = GridBagConstraints.WEST;
+        constraints.anchor = GridBagConstraints.CENTER;  // Center the components horizontally
         constraints.insets = new Insets(20, 20, 20, 20);
-
+    
         constraints.gridx = 0;
         constraints.gridy = 0;     
+        constraints.gridwidth = 2;  // Let the label span two columns
+        add(messageLabel, constraints);  // Add the message label here
+    
+        constraints.gridwidth = 1;  // Reset gridwidth
+        constraints.gridy = 1;  
         add(new JLabel("Username"), constraints);
-
+    
         constraints.gridx = 1;
         add(txuser, constraints);
-
+    
         constraints.gridx = 0;
-        constraints.gridy = 1;  
+        constraints.gridy = 2;  
         add(new JLabel("Password"), constraints);
-
+    
         constraints.gridx = 1;
         add(pass, constraints);
-
+    
+        constraints.gridx = 0;
+        constraints.gridy = 4;
+        constraints.gridwidth = 2;
+        constraints.anchor = GridBagConstraints.CENTER;
+        add(blogin, constraints);
+    
         constraints.gridx = 0;
         constraints.gridy = 3;
         constraints.gridwidth = 2;
         constraints.anchor = GridBagConstraints.CENTER;
-        add(blogin, constraints);
-
-        constraints.gridx = 0;
-        constraints.gridy = 2;
-        constraints.gridwidth = 2;
-        constraints.anchor = GridBagConstraints.CENTER;
         add(bregister, constraints);
-
+    
         blogin.addActionListener(this);
         bregister.addActionListener(this);
-
+    
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
     }
+    
    
     @Override
     public void actionPerformed(ActionEvent e) {

@@ -1,4 +1,4 @@
-// AddItemFrame.java
+// OrderSuppliesFrame.java
 package frontend;
 
 import javax.swing.*;
@@ -7,16 +7,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
-public class AddItemFrame extends JFrame implements ActionListener {
+public class OrderSuppliesFrame extends JFrame implements ActionListener {
     JList<String> itemList;
-    JButton addItemButton;
-    JButton backToInventoryButton;
+    JButton orderButton;
+    JButton backToMainMenuButton;
     JTextField quantityField;
     Connection conn;
     JFrame mainMenuFrame;  // Reference to the main menu frame
 
-    public AddItemFrame(JFrame mainMenuFrame) {
-        super("Add Item");
+    public OrderSuppliesFrame(JFrame mainMenuFrame) {
+        super("Order Supplies");
         setSize(500, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -28,19 +28,19 @@ public class AddItemFrame extends JFrame implements ActionListener {
         itemList = new JList<>(items);
 
         // Create the buttons
-        addItemButton = new JButton("Add Item");
-        backToInventoryButton = new JButton("Back to Inventory");
+        orderButton = new JButton("Order");
+        backToMainMenuButton = new JButton("Back to Main Menu");
 
         // Add action listeners
-        addItemButton.addActionListener(this);
-        backToInventoryButton.addActionListener(this);
+        orderButton.addActionListener(this);
+        backToMainMenuButton.addActionListener(this);
 
         // Create the quantity field
         quantityField = new JTextField(5);
 
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(backToInventoryButton, BorderLayout.NORTH); // Add the button at the top of the panel
-        panel.add(addItemButton, BorderLayout.CENTER);
+        panel.add(backToMainMenuButton, BorderLayout.NORTH); // Add the button at the top of the panel
+        panel.add(orderButton, BorderLayout.CENTER);
 
         // Connect to the database
         try {
@@ -54,7 +54,7 @@ public class AddItemFrame extends JFrame implements ActionListener {
         JPanel southPanel = new JPanel();
         southPanel.add(new JLabel("Quantity: "));
         southPanel.add(quantityField);
-        southPanel.add(addItemButton);
+        southPanel.add(orderButton);
         add(new JScrollPane(itemList), BorderLayout.CENTER);
         add(southPanel, BorderLayout.SOUTH);
         add(panel, BorderLayout.NORTH); // Add the panel with the buttons at the north of the frame
@@ -64,29 +64,26 @@ public class AddItemFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == backToInventoryButton) {
-            // Switch back to the inventory frame
+        if (e.getSource() == backToMainMenuButton) {
+            // Switch back to the main menu
             this.setVisible(false);
             mainMenuFrame.setVisible(true);
         }
-        else if (e.getSource() == addItemButton) {
+        else if (e.getSource() == orderButton) {
             String selectedItem = itemList.getSelectedValue();
             if (selectedItem != null && !quantityField.getText().isEmpty()) {
-                int quantityToAdd = Integer.parseInt(quantityField.getText());
+                int quantityToOrder = Integer.parseInt(quantityField.getText());
 
                 // Add the selected item to the database
                 try {
                     PreparedStatement pstmt = conn.prepareStatement("UPDATE Items SET Quantity = Quantity + ? WHERE Item = ?");
-                    pstmt.setInt(1, quantityToAdd);  // Get the quantity from the text field
+                    pstmt.setInt(1, quantityToOrder);  // Get the quantity from the text field
                     pstmt.setString(2, selectedItem);  // Get the item name from the selected value
                     pstmt.executeUpdate();
                     pstmt.close();
 
                     // Show a confirmation dialog
-                    JOptionPane.showMessageDialog(this, "Item added successfully!");
-
-                    // Refresh the inventory list in the main menu
-                    ((InventoryFrame) mainMenuFrame).refreshInventoryList();
+                    JOptionPane.showMessageDialog(this, "Order placed successfully!");
 
                     // Switch back to the main menu
                     this.setVisible(false);
