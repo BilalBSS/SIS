@@ -1,4 +1,3 @@
-// OrderSuppliesFrame.java
 package frontend;
 
 import javax.swing.*;
@@ -6,14 +5,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.HashMap;
 
 public class OrderSuppliesFrame extends JFrame implements ActionListener {
     JList<String> itemList;
-    JButton orderButton;
-    JButton backToMainMenuButton;
+    JButton addToCartButton, backToMainMenuButton, goToCartButton;
     JTextField quantityField;
     Connection conn;
-    JFrame mainMenuFrame;  // Reference to the main menu frame
+    JFrame mainMenuFrame; 
+    HashMap<String, Integer> cart;  
+    CartFrame cartFrame;  
+    HashMap<String, Double> prices = new HashMap<>();
 
     public OrderSuppliesFrame(JFrame mainMenuFrame) {
         super("Order Supplies");
@@ -23,16 +25,21 @@ public class OrderSuppliesFrame extends JFrame implements ActionListener {
 
         this.mainMenuFrame = mainMenuFrame;  // Initialize the main menu frame
 
+        // Initialize the prices
+        prices.put("Book", 15.99);  // Price for a book
+        prices.put("Desk", 120.00);  // Price for a desk
+        prices.put("White Board", 45.50);  // Price for a white board
+        prices.put("Stationery", 10.00);  // Price for stationery
+        prices.put("Lab Equipment", 250.00);  // Price for lab equipment
+
         // Create the list of items
         String[] items = {"Book", "Desk", "White Board", "Stationery", "Lab Equipment"};
         itemList = new JList<>(items);
 
         // Create the buttons
-        orderButton = new JButton("Order");
         backToMainMenuButton = new JButton("Back to Main Menu");
 
         // Add action listeners
-        orderButton.addActionListener(this);
         backToMainMenuButton.addActionListener(this);
 
         // Create the quantity field
@@ -40,7 +47,27 @@ public class OrderSuppliesFrame extends JFrame implements ActionListener {
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(backToMainMenuButton, BorderLayout.NORTH); // Add the button at the top of the panel
-        panel.add(orderButton, BorderLayout.CENTER);
+
+        // Create the cart
+        cart = new HashMap<>();
+
+        // Create the cart frame and pass this frame to it
+        cartFrame = new CartFrame(this);
+
+        // Create the add to cart button
+        addToCartButton = new JButton("Add to Cart");
+        addToCartButton.addActionListener(this);
+
+        // Create the go to cart button
+        goToCartButton = new JButton("Go to Cart");
+        goToCartButton.addActionListener(this);
+
+        // Add the add to cart button to the panel
+        JPanel southPanel = new JPanel();
+        southPanel.add(new JLabel("Quantity: "));
+        southPanel.add(quantityField);
+        southPanel.add(addToCartButton);
+        southPanel.add(goToCartButton);
 
         // Connect to the database
         try {
@@ -51,10 +78,6 @@ public class OrderSuppliesFrame extends JFrame implements ActionListener {
         }
 
         // Add the list and the buttons to the frame
-        JPanel southPanel = new JPanel();
-        southPanel.add(new JLabel("Quantity: "));
-        southPanel.add(quantityField);
-        southPanel.add(orderButton);
         add(new JScrollPane(itemList), BorderLayout.CENTER);
         add(southPanel, BorderLayout.SOUTH);
         add(panel, BorderLayout.NORTH); // Add the panel with the buttons at the north of the frame
@@ -69,29 +92,18 @@ public class OrderSuppliesFrame extends JFrame implements ActionListener {
             this.setVisible(false);
             mainMenuFrame.setVisible(true);
         }
-        else if (e.getSource() == orderButton) {
+        else if (e.getSource() == addToCartButton) {
             String selectedItem = itemList.getSelectedValue();
             if (selectedItem != null && !quantityField.getText().isEmpty()) {
-                int quantityToOrder = Integer.parseInt(quantityField.getText());
-
-                // Add the selected item to the database
-                try {
-                    PreparedStatement pstmt = conn.prepareStatement("UPDATE Items SET Quantity = Quantity + ? WHERE Item = ?");
-                    pstmt.setInt(1, quantityToOrder);  // Get the quantity from the text field
-                    pstmt.setString(2, selectedItem);  // Get the item name from the selected value
-                    pstmt.executeUpdate();
-                    pstmt.close();
-
-                    // Show a confirmation dialog
-                    JOptionPane.showMessageDialog(this, "Order placed successfully!");
-
-                    // Switch back to the main menu
-                    this.setVisible(false);
-                    mainMenuFrame.setVisible(true);
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
+                int quantityToAdd = Integer.parseInt(quantityField.getText());
+                cart.put(selectedItem, cart.getOrDefault(selectedItem, 0) + quantityToAdd);
+                JOptionPane.showMessageDialog(this, "Item added to cart!");
             }
+        }
+        else if (e.getSource() == goToCartButton) {
+            // Show the cart frame
+            cartFrame.updateCart(cart);
+            cartFrame.setVisible(true);
         }
     }
 }
